@@ -1,0 +1,219 @@
+\section{Analyse fonctionnelle}
+
+\subsection{Structures}
+
+\subsubsection{Structure ``Jour''}
+
+\begin{lstlisting}[language=C]
+typedef struct
+{
+  char min; // température minimum
+  char max; // température maximum
+} Jour;
+\end{lstlisting}
+
+\subsubsection{Les énumération}
+
+L'énumération colonne indique la colonne à afficher (an, mois, jour \ldots).
+\begin{lstlisting}[language=C]
+typedef enum
+{
+  AN,
+  MOIS,
+  JOUR,
+  MIN,
+  MAX,
+  MOY_JOUR,
+  MOY_MOIS,
+  MOY_AN,
+  MIN_MOIS,
+  MIN_AN,
+  MAX_MOIS,
+  MAX_AN,
+  OU // Séparateur
+} Colonne;
+
+\end{lstlisting}
+
+L'énumération Fonction indique l'opérateur utlisé dans une condition ( 
+\lstinline$=, <, >, $ et \lstinline$est$ pour comparer le nom d'un jour).
+  
+\begin{lstlisting}[language=C]
+typedef enum {JOUR_EST, EGALE, INF, SUP} Fonction;
+\end{lstlisting}
+
+\subsubsection{Structure ``Param''}
+
+Cette structure repèsente un paramètre dans une condition. Et comme un
+paramètre peut être une chaine de caractères, un entier ou un réel. 
+Nous avons mis la valeur du paramètre dans une union
+
+\begin{lstlisting}[language=C]
+typedef union
+{
+  char jour[9];
+  float f;
+  int i;
+} UParam;	
+
+typedef enum {STR, INT, FLOAT} TypeParam;
+
+typedef struct
+{
+  UParam val;
+  TypeParam type;
+} Param;
+\end{lstlisting}
+
+\subsubsection{Structure ``Condition''}
+Enfin nous arrivons à la structure condition qui reporèsente une condition
+saisie par l'utilisateur.
+
+\begin{lstlisting}[language=C]
+/** structure condition */
+typedef struct
+{
+  Colonne col; // Colonne sur laquelle appliquer la condition
+  Fonction f; // la fonction applique
+  Param param; // les paramètres de la fonction
+} Condition;
+\end{lstlisting}
+
+\subsection{Fonctions}
+\subsubsection{Fonction ``longueur\_mois''}
+
+\begin{enumerate}[label=\textbf{\Alph* --}]
+	\item \textbf{Spécification des données: \\}
+	la fonction reçois comme arguments deux entiers, le premier représente l’année et le 
+deuxième représente le mois. 
+		
+    \item \textbf{Spécification fonctionnelle: \\}
+    une fois l’année et le mois sont saisis, la fonction ``longueur\_mois'' effectue un test
+sur le nombre correspondant au numero du mois, pour les mois appartenant a l’interval
+$[1, 12] \backslash \{2\}$ leurs nombre de jours est affecté directement, suivant les valeurs (par rang du mois) 
+$\{$31, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31$\}$. Pour le mois numero 2, on procède a un deuxième test,
+ celui de l’année, dans le cas ou elle est bissextile \lstinline$an % 4 == 0$ on affecte au moi de février
+  29 jours, dans le cas contraire 28 jours.
+\end{enumerate}
+
+\subsubsection{Fonction ``ecrire\_jour''}
+
+\begin{enumerate}[label=\textbf{\Alph* --}]
+	\item \textbf{Spécification des données: \\}
+	la fonction reçois comme arguments un fichier dans lequel seront remplies les données de température, et deux entiers le premier représente le jour et le deuxième représente le mois. 
+		
+    \item \textbf{Spécification fonctionnelle: \\}
+    une fois le nom du fichier cible, le jour et le mois sont saisis, la fonction ``ecrire\_jour'' affecte a chaque mois un entier temp, dont la valeur sera (suivant le rang du mois-1) dans l’interval {5, 7, 10, 11, 15, 17, 24, 22, 16, 15, 10, 7}. Ainsi pour chaque mois les valeurs min
+et max seront générées, inscrites et successivement comprises dans les intervals \lstinline$[temp-12, temp-2]$
+ et \lstinline$[temp+2, temp+12]$,
+ceci avec les deux operations: 
+
+\begin{itemize}
+\item \lstinline$min = rand() % 10 + temp[mois - 1] - 12$
+\item \lstinline$max = rand() \% -10 + temp[mois - 1] + 2.$
+\end{itemize}
+\end{enumerate}
+
+\subsubsection{Fonction ``lire	\_jour''}
+
+\begin{enumerate}[label=\textbf{\Alph* --}]
+	\item \textbf{Spécification des données: \\}
+	la fonction reçois comme arguments un fichier du quel sera faite la lecture des données de température, un tableau de type jours de taille 31 et deux entiers le premier représente le mois et le deuxième représente l’année. 
+		
+    \item \textbf{Spécification fonctionnelle: \\}
+    une fois le nom du fichier cible,le tableau des jours, le mois et l’année sont saisis, la fonction ``lire\_jour''
+     procède à l’extraction des données correspondants aux temperatures des jours d’un mois défini, pour les mois 
+   $[1, 12]\backslash\{2\}$ le nombre de jours considérés est successivement (par rang du mois) 
+   {31, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}, dans le cas du mois
+  de février le nombre de temperatures extraites sera 2*29 dans le cas d’une année bissextiles et 2*28 si non.
+
+\end{enumerate}
+
+\subsubsection{Fonction ``ecrire\_mois''}
+\begin{enumerate}[label=\textbf{\Alph* --}]
+	\item \textbf{Spécification des données: \\}
+	la fonction reçois comme arguments un fichier dans lequel seront remplies les données de température, et deux entiers le premier représente l’année et le deuxième représente le mois. 
+		
+    \item \textbf{Spécification fonctionnelle: \\}
+    après avoir reçu le nom du fichier d’enregistrement, l’année et le mois, la fonction ``ecrire\_mois''
+     procède a la generation et l’enregistrement des temperatures de l’année cible en faisant appel a la fonction 
+     ``ecrire\_jour'' pour chaque mois de l’année citée.
+
+\end{enumerate}
+
+\subsubsection{Fonction ``lire\_mois''}
+\begin{enumerate}[label=\textbf{\Alph* --}]
+	\item \textbf{Spécification des données: \\}
+	la fonction reçois comme arguments un fichier du quel sera faite la lecture des données de température, un tableau de type jour de 2 dimensions et l’année. 
+		
+    \item \textbf{Spécification fonctionnelle: \\}
+    après avoir reçu le nom du fichier de lecture, le tableau des jours et mois, et l’année cible, la fonction ``lire\_mois'' procède au remplissage du tableau en faisant appel à la fonction ``lire\_jour'' pour chaque ligne lu depuis le fichier, pour l’ensemble des lignes correspondants à chaque mois, jusque’à remplir les 12 mois de l’année cible. 
+
+\end{enumerate}
+
+
+\subsubsection{Fonction ``generation\_temperatures''}
+\begin{enumerate}[label=\textbf{\Alph* --}]
+	\item \textbf{Spécification des données: \\}
+	la fonction reçois comme arguments un fichier dans lequel seront remplies les données de température, et deux entiers le premier représente l’année de debut de génération des températures et le deuxième représente l’année de fin de génération des températures.
+		
+    \item \textbf{Spécification fonctionnelle: \\}
+    après avoir reçu le nom du fichier d’enregistrement et les deux années limites, la fonction ``generation\_temperatures''
+     procède a la generation et l’enregistrement des temperatures des jours correspondant a (anFin-anDebut+1) années, et qui se situent entre les années anDebut et anFin. cela en faisant appel a la fonction ``ecrire\_mois'' pour chaque année.
+
+\end{enumerate}	
+
+
+\subsubsection{Fonction ``lire''}
+\begin{enumerate}[label=\textbf{\Alph* --}]
+	\item \textbf{Spécification des données: \\}
+	la fonction reçois comme arguments un fichier du quel sera faite la lecture des données de température et un tableau de type jour de trois dimensions.
+		
+    \item \textbf{Spécification fonctionnelle: \\}
+    après avoir reçu le nom du fichier de lecture et le tableau de remplissage, la fonction ``lire'' procède au remplissage du tableau par les temperatures a partir du fichier, ceci en faisant appel a la fonction ``lire\_mois''
+     (anFin - anDebut + 1) fois  pour chaque année entre anDebut et anFin. 
+\end{enumerate}	
+
+\subsubsection{Fonction ``colonne\_a\_int''}
+\begin{enumerate}[label=\textbf{\Alph* --}]
+	\item \textbf{Spécification des données: \\}
+		La fonction reçoit comme paramètres : Les données lues et une colonne de type \lstinline$enum Colonne$.
+    \item \textbf{Spécification fonctionnelle: \\}
+    Cette fonction convertit La colonne de type \lstinline$enum Colonne$, à la valeur entière équivalente, en
+    cherchant cette valeur dans le tableau contenant les données du fichier.
+ \end{enumerate}	
+ 
+\subsubsection{Fonction ``tester\_condition''}
+\begin{enumerate}[label=\textbf{\Alph* --}]
+	\item \textbf{Spécification des données: \\}
+		La fonction reçoit comme paramètres : Une condition, les donées, et une date (an/mois/jour).
+    \item \textbf{Spécification fonctionnelle: \\}
+    Teste si la condition est vraie pour la date donnée.
+ \end{enumerate}	
+ 
+ \subsubsection{Fonction ``test\_jour''}
+\begin{enumerate}[label=\textbf{\Alph* --}]
+	\item \textbf{Spécification des données: \\}
+		Cette fonction reçoit le tableau contenant les données lues, une date, et une liste de 
+		conditions.
+    \item \textbf{Spécification fonctionnelle: \\}
+    La fonction ``test\_jour'' parcourt la liste des conditions et les teste l'une après l'autre 
+    sur la date donnée à l'aide de la fonction ``tester\_condition''
+ \end{enumerate}	
+ 
+ 
+  \subsubsection{Fonction ``parcourir''}
+\begin{enumerate}[label=\textbf{\Alph* --}]
+	\item \textbf{Spécification des données: \\}
+		Cette fonction reçoit le tableau contenant les données lues à partir du fichier, une liste des
+		conditions et une liste des colonnes saisies par l'utilisateur
+    \item \textbf{Spécification fonctionnelle: \\}
+    La fonction ``test\_parcourir'' parcourt tous les jours stockés dans le tableau des données et affiche 
+    ceux pour lesquels la fonction ``tester\_jour'' retourne 1.
+    
+    Lors de l'affichage la fonction parcourt la liste des colonnes et affiche seulement celles éxistantes
+    dans la liste.
+ \end{enumerate}	
+ 
+ 
+

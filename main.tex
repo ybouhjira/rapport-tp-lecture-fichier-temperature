@@ -1,0 +1,33 @@
+\documentclass[a4paper, 12pt]{article}
+
+% UTF-8 & fonts
+\usepackage[francais]{babel} 
+\usepackage{xltxtra,fontspec,xunicode}
+\setmonofont[Scale=0.72]{Monaco}  
+ \usepackage{color}
+ 
+ \usepackage{amsmath} % For mathematical formulas
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+% Source code
+\usepackage{listings}
+\lstset{                                                                          
+   basicstyle=\ttfamily,                                                           
+   frame=l  
+}
+
+\usepackage{enumitem}
+
+\begin{document}
+
+\tableofcontents
+
+\pagebreak
+
+\input{analyse}
+\input{analyse_fonctionnelle}
+\input{dossier_de_programmation}
+\input{code_source}
+
+\end{document}

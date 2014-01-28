@@ -1,0 +1,149 @@
+\section{Dossier de programmation}
+
+\subsection{Objectifs}
+Les deux objectifs majeurs de ce programme sont:
+
+\begin{itemize}
+  \item Générer une base de donnée de températures, s’étallant sur une période de 199 années,
+   en les insérant dans un fichier.
+   
+  \item Récupérer les données concernant les températures des jours (de l’année 1901 à 2099) 
+  depuis un fichier, et leurs appliquer des fonctions d’interrogation (Max, Min, Moyenne…)
+  pour avoir des conclusions et des résultats plus complexes.
+\end{itemize}
+
+\subsection{Type de données}
+
+\begin{itemize}
+  \item dans la première étape qui est la génération des températures, la donnée est un couple (année, année). Qui signifie l’année du début et l’année de fin de génération des températures.
+  
+  \item dans la deuxième étape qui est l’extraction des données depuis le fichier, 
+dans un premier lieu on va remplir notre structure avec les températures disponibles,
+ ainsi le type de donnée sera un couple (année, année). Or une fois la structure est 
+ remplie le type de données dans ce cas peut varier en fonction de la fonction d’interrogation utilisée;
+un triplet (année, mois, jour) pour la fonction qui donne les températures min et max d’un jour quelconque.
+un couple (année, mois) pour la fonction qui donne la moyenne de température pour un mois quelconque.
+une donnée (année) pour la fonction qui détermine le mois le plus chaud (ou froid) d’une année quelconque.
+
+\end{itemize}
+
+\subsection{Initialisation des donées}
+
+Comme il y a deux étape de gestion des données dans ce projet, il y aura automatiquement deux méthodes distinctes d’initialisation des variables:
+
+\begin{itemize}
+  \item dans la première étape les variables min et max seront initialisées de façon aléatoire avec quelques conditions pour garantir leurs validité.
+  \item dans la deuxième étape la variable tableau sera initialisé depuis un fichier (précédemment crée).
+\end{itemize}
+
+\subsection{Fonction de base}
+
+Dans le programme nous auront besoin de fonction modulo 4 et rand, pour determiner si l’année
+ est bissextile ou non et générer les données concernant les température de façon aléatoire.
+
+Definition des fonctions MOD4 et rand()\% en language C
+
+\begin{lstlisting}
+int MOD4(int valeur)
+{
+  faie la division euclidienne de valeur sur 4;
+  retourner le reste de cette division qui sera dans l’interval [0, 3];
+}
+
+int rand()%valeur
+{
+  générer un entier quelconque;
+  faire sa division euclidienne sur valeur;
+  retourner le reste de la division précédente, 
+  qui sera un entier dans l’intervalle [0, valeur-1];
+}
+\end{lstlisting}
+
+\subsection{Programmation des fonctions}
+
+\begin{lstlisting}
+longueur_mois,
+ecrire_jour,
+ecrire_mois,
+generation_temperatures,
+lecture,
+parcourir,
+tester_condition;
+
+fonction longueur_mois(an, mois:entier):entier
+{
+retourner (29 si (mois==2 et MOD4(an)==0),
+           28 si (mois==2 et MOD4(an)!=0),
+           30+(((mois * 9) / 8) & 1) sinon);
+}
+
+fonction ecrire_jour(fichier:Fichier, jour, mois:entier):procédure 
+{
+  temp[] = {5, 7, 10, 11, 15, 17, 24, 22, 16, 15, 10, 7}:entier;
+  min = rand() % 10 + temp[mois - 1] - 12:entier;
+  max = rand() % -10 + temp[mois - 1] + 2:entier;
+  écrir les valeurs de min et max dans le fichier fichier;
+}
+
+fonction ecrire_mois(fichier:Fichier, an, mois:entier):procédure
+{
+  jour:entier;
+  écrir la valeur du mois dans la fichier;
+  pour(jour allant de 1 à longueur_mois(an, mois) 
+    écrire les températures min et max dans le fichier;
+}
+
+fonction generation_temperatures
+(fichier:Fichier, anDebut, anFin:entier):procédure
+{
+  déclarer an et mois:entier;
+  pour(an allant de anDebut à anFin)
+    écrire le nom de l’année dans le fichier;
+    pour(mois allant de 1 a 12) 
+      écrire les températures des jours du mois dans le fichier;
+}
+
+fonction lecture
+(fichier:char, jour[anFin-anDebut+1][mois][jour]:Jour):procédure 
+{
+  ouvrir le fichier dont le nom est "fichier" en mode lecture;
+  si le fichier n'est pas vide
+   tanqu’on a pas atteint la fin du fichier
+   {
+       lire l’année;
+       lire les mois;
+   }
+  sinon 
+    retourner un message d'erreur;
+}
+
+fonction parcouir
+(ans[ANS][12][31]:Jour, conditions:ListeConditions, cols:ListeChaines)
+{
+  pour an allant de ANDB à ANFN
+    pour mois allant de 1 à 12
+      pour jour allant de 1 à longueur_mois(an, mois)
+        si test_jour(ans, conditions, an, mois, jour)
+	      pour toutes les colonnes dans cols
+	         afficher la valeur de colonne pour (an, mois, jour);
+	      fin pour        
+        fin si
+      fin pour
+    fin pour
+  fin pour
+}
+
+fonction tester_condition
+(an[ANS][12][31]:Jour, cond:Condition, an, mois, jour : Entier)
+{
+	switch(cond.fonction)
+	{
+	  case EGALE : return cond.col == cond.param;
+	  case SUP : return cond.col > cond.param;
+	  case INF : return cond.col < cond.param;
+	  case EST : return cond.col == nom_jour(cond.param);
+	}
+}
+
+
+\end{lstlisting}
